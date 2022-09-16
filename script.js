@@ -17,7 +17,11 @@ function makePageForEpisodes(episodeList) {
 
     const titleElem = document.createElement("h4");
     titleElem.setAttribute("class", "episodeTitle");
-    titleElem.textContent = episode.name;
+    const seasonNumber =
+      episode.season < 10 ? `0${episode.season}` : episode.season;
+    const episodeNumber =
+      episode.number < 10 ? `0${episode.number}` : episode.number;
+    titleElem.innerHTML = `${episode.name} - S${seasonNumber}E${episodeNumber}`;
     episodeElem.appendChild(titleElem);
 
     const imageElem = document.createElement("img");
