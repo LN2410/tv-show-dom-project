@@ -2,12 +2,14 @@
 function setup() {
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
+  const searchElem = document.getElementById("searchBox");
+  searchElem.addEventListener("input", wordSearch);
   console.log(allEpisodes);
 }
 
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
-  // rootElem.textContent = `Got ${episodeList.length} episode(s)`;
+  rootElem.innerHTML = "";
 
   episodeList.forEach((episode) => {
     const episodeElem = document.createElement("div");
@@ -34,6 +36,29 @@ function makePageForEpisodes(episodeList) {
     episodeSummary.innerHTML = episode.summary;
     episodeElem.appendChild(episodeSummary);
   });
+}
+
+function wordSearch(event) {
+  const searchTerm = event.target.value.toLowerCase();
+  const matchedEpisodes = getAllEpisodes().filter((episode) => {
+    const nameResult = episode.name.toLowerCase().indexOf(searchTerm) > -1;
+    const summaryResult =
+      episode.summary.toLowerCase().indexOf(searchTerm) > -1;
+
+    if (nameResult || summaryResult) {
+      episode.name = episode.name
+        .toLowerCase()
+        .replace(searchTerm, `<span class="highlight">${searchTerm}</span>`);
+      episode.summary = episode.summary
+        .toLowerCase()
+        .replace(searchTerm, `<span class="highlight">${searchTerm}</span>`);
+    }
+    return nameResult || summaryResult;
+  });
+  makePageForEpisodes(matchedEpisodes);
+  document.getElementById("numberOfResults").innerText = `Displaying ${
+    matchedEpisodes.length
+  }/${getAllEpisodes().length} episodes`;
 }
 
 window.onload = setup;
