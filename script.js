@@ -2,9 +2,21 @@
 function setup() {
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
+
   const searchElem = document.getElementById("searchBox");
   searchElem.addEventListener("input", wordSearch);
-  console.log(allEpisodes);
+
+  const selectEpisode = document.getElementById("selectEp");
+  allEpisodes.forEach((episode) => {
+    const optionElem = document.createElement("option");
+
+    optionElem.textContent = `${formatSeasonAndEp(
+      episode.season,
+      episode.number
+    )} - ${episode.name}`;
+    selectEpisode.appendChild(optionElem);
+  });
+  selectEpisode.addEventListener("change", onEpisodeSelect);
 }
 
 function makePageForEpisodes(episodeList) {
@@ -58,6 +70,19 @@ function wordSearch(event) {
   document.getElementById("numberOfResults").innerText = `Displaying ${
     matchedEpisodes.length
   }/${getAllEpisodes().length} episodes`;
+}
+
+function onEpisodeSelect(event) {
+  const selectEpisode = event.target.value;
+  if (selectEpisode.trim().toLowerCase() === "all episodes") {
+    return makePageForEpisodes(getAllEpisodes());
+  }
+
+  for (const episode of getAllEpisodes()) {
+    if (episode.name === selectEpisode.split("-")[1].trim()) {
+      makePageForEpisodes([episode]);
+    }
+  }
 }
 
 function formatSeasonAndEp(season, episode) {
