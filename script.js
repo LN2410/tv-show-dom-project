@@ -19,11 +19,10 @@ function makePageForEpisodes(episodeList) {
 
     const titleElem = document.createElement("h4");
     titleElem.setAttribute("class", "episodeTitle");
-    const seasonNumber =
-      episode.season < 10 ? `0${episode.season}` : episode.season;
-    const episodeNumber =
-      episode.number < 10 ? `0${episode.number}` : episode.number;
-    titleElem.innerHTML = `${episode.name} - S${seasonNumber}E${episodeNumber}`;
+    titleElem.innerHTML = `${episode.name} - ${formatSeasonAndEp(
+      episode.season,
+      episode.number
+    )}`;
     episodeElem.appendChild(titleElem);
 
     const imageElem = document.createElement("img");
@@ -59,6 +58,12 @@ function wordSearch(event) {
   document.getElementById("numberOfResults").innerText = `Displaying ${
     matchedEpisodes.length
   }/${getAllEpisodes().length} episodes`;
+}
+
+function formatSeasonAndEp(season, episode) {
+  return `S${season < 10 ? `0${season}` : season}E${
+    episode < 10 ? `0${episode}` : episode
+  }`;
 }
 
 window.onload = setup;
