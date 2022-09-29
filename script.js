@@ -1,6 +1,6 @@
 //You can edit ALL of the code here
+let allEpisodes = []; // fetchAllEpisodes();
 function setup() {
-  const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
 
   const searchElem = document.getElementById("searchBox");
@@ -51,34 +51,32 @@ function makePageForEpisodes(episodeList) {
 
 function wordSearch(event) {
   const searchTerm = event.target.value.toLowerCase();
-  const matchedEpisodes = getAllEpisodes().filter((episode) => {
-    const nameResult = episode.name.toLowerCase().indexOf(searchTerm) > -1;
-    const summaryResult =
-      episode.summary.toLowerCase().indexOf(searchTerm) > -1;
-
-    if (nameResult || summaryResult) {
-      episode.name = episode.name
-        .toLowerCase()
-        .replace(searchTerm, `<span class="highlight">${searchTerm}</span>`);
-      episode.summary = episode.summary
-        .toLowerCase()
-        .replace(searchTerm, `<span class="highlight">${searchTerm}</span>`);
-    }
-    return nameResult || summaryResult;
+  debugger;
+  let allEpisodesCopy = JSON.parse(JSON.stringify(allEpisodes));
+  const matchedEpisodes = allEpisodesCopy.filter((episode) => {
+    const nameResult = episode.name.toLowerCase().indexOf(searchTerm);
+    episode.name = episode.name
+      .toLowerCase()
+      .replaceAll(searchTerm, `<span class="highlight">${searchTerm}</span>`);
+    const summaryResult = episode.summary.toLowerCase().indexOf(searchTerm);
+    episode.summary = episode.summary
+      .toLowerCase()
+      .replaceAll(searchTerm, `<span class="highlight">${searchTerm}</span>`);
+    return nameResult > -1 || summaryResult > -1;
   });
   makePageForEpisodes(matchedEpisodes);
-  document.getElementById("numberOfResults").innerText = `Displaying ${
-    matchedEpisodes.length
-  }/${getAllEpisodes().length} episodes`;
+  document.getElementById(
+    "numberOfResults"
+  ).innerText = `Displaying ${matchedEpisodes.length}/${allEpisodesCopy.length} episodes`;
 }
 
 function onEpisodeSelect(event) {
   const selectEpisode = event.target.value;
   if (selectEpisode.trim().toLowerCase() === "all episodes") {
-    return makePageForEpisodes(getAllEpisodes());
+    return makePageForEpisodes(allEpisodes);
   }
 
-  for (const episode of getAllEpisodes()) {
+  for (const episode of allEpisodes) {
     if (episode.name === selectEpisode.split("-")[1].trim()) {
       makePageForEpisodes([episode]);
     }
@@ -91,4 +89,12 @@ function formatSeasonAndEp(season, episode) {
   }`;
 }
 
-window.onload = setup;
+window.onload = () => {
+  fetch("https://api.tvmaze.com/shows/82/episodes").then((response) => {
+    response.json().then((data) => {
+      allEpisodes = data;
+      debugger;
+      setup();
+    });
+  });
+};
