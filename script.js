@@ -50,8 +50,7 @@ function makePageForEpisodes(episodeList) {
 }
 
 function wordSearch(event) {
-  const searchTerm = event.target.value.toLowerCase();
-  debugger;
+  const searchTerm = event.target.value.toLowerCase().trim();
   let allEpisodesCopy = JSON.parse(JSON.stringify(allEpisodes));
   const matchedEpisodes = allEpisodesCopy.filter((episode) => {
     const nameResult = episode.name.toLowerCase().indexOf(searchTerm);
@@ -64,10 +63,13 @@ function wordSearch(event) {
       .replaceAll(searchTerm, `<span class="highlight">${searchTerm}</span>`);
     return nameResult > -1 || summaryResult > -1;
   });
-  makePageForEpisodes(matchedEpisodes);
   document.getElementById(
     "numberOfResults"
   ).innerText = `Displaying ${matchedEpisodes.length}/${allEpisodesCopy.length} episodes`;
+  if (searchTerm.length === 0) {
+    return makePageForEpisodes(allEpisodes);
+  }
+  makePageForEpisodes(matchedEpisodes);
 }
 
 function onEpisodeSelect(event) {
